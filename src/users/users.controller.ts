@@ -1,14 +1,16 @@
 import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
-
+import { UsersService } from './users.service';
 // Controllers receive specific http requests. Basically we can say that controller is where we will write our routes.
 
 // @Controller is a decorator. Decorators are functions prefixed with '@' symbol. Decorators provide metadata and abstracts their functionality.
 
 @Controller('users') // Handles /users route
 export class UsersController {
+  constructor(private readonly usersService: UsersService) {} // Inject the UsersService into the UsersController using dependency injection
+
   @Get() // Handles Get Request on /users route
   findAll() {
-    return [];
+    return this.usersService.findAll();
   }
 
   @Post() // Handle Post request on /users route
@@ -20,7 +22,7 @@ export class UsersController {
   @Get(':id') // Handles /users/:id route
   findOne(@Param('id') id: string) {
     // For the findOne method to handle a request param, we have to use @Param decorator
-    return { id };
+    return this.usersService.findOne(+id);
   }
 
   // After a route that handles a param, we cannot add any other route with the same request method. For Example, the above route handles Get request at /users/:id. Now lets say after that route we create another route that handles a Get request at /users/fetch-all-users, the 'fetch-all-users' will be sent as a param to the /user/:id route. To solve this issue we have to keep dynamic routes at the bottom and all the static routes should be placed above it. So, in Nestjs controllers, the order matters.
